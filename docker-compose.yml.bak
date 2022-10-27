@@ -1,0 +1,87 @@
+version: '3'
+services:
+  
+  #-------------------------------------------------------------//  CONTAİNER CONFİG  //---------------------------------------------------------------------------------#
+  
+  redis:
+    image: redis:latest
+    restart: unless-stopped
+    container_name: redis
+    ports:
+      - 6379:6379
+    volumes:
+      - C:\LABERP\config:/usr/local/etc/redis/redis.conf
+    networks:
+      - common-bridge
+        
+  rabbitmq-mgmt:
+    image: rabbitmq:3.9.13-management
+    restart: unless-stopped
+    container_name: rabbitmq-1
+    ports:
+      - 15672:15672
+      - 5672:5672
+    networks:
+      - common-bridge    
+
+  rabbitmq:
+    image: rabbitmq:3.9.13
+    restart: unless-stopped
+    container_name: rabbitmq-2
+    ports:
+      - 15672:15672
+      - 5672:5672
+    networks:
+      - common-bridge        
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.10.2
+    restart: unless-stopped
+    container_name: elasticsearch
+    ports:
+      - 9200:9200
+      - 9300:9300
+    environment:
+      - discovery.type=single-node
+      - network.host=0.0.0.0
+    networks:
+      - common-bridge
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.10.2
+    restart: unless-stopped
+    container_name: kibana
+    ports:
+      - 5601:5601
+    networks:
+      - common-bridge      
+
+  db:
+    image: postgres:13
+    container_name: postgres
+    restart: unless-stopped
+    ports:
+      - 5432:5432
+    environment: 
+      - POSTGRES_PASSWORD=123456 
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+    networks:
+      - common-bridge
+   
+  
+#-------------------------------------------------------------//  NETWORK CONFİG  //-------------------------------------------------------------------------------------#
+
+networks:
+  common-bridge:
+    driver: bridge
+
+#-----------------------------------------------------------//  VOLUME MAPPİNG  //--------------------------------------------------------------------------------------#   
+
+volumes:
+  data:
+  dbdata:
+  conf: 
+  config:
+
+  

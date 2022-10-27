@@ -1,0 +1,84 @@
+version: '3'
+services:
+  
+  #-------------------------------------------------------------//  CONTAİNER CONFİG  //---------------------------------------------------------------------------------#
+  
+  redis:
+    image: redis:latest
+    deploy:
+      replicas: 1
+    restart: always
+    container_name: redis
+    ports:
+      - 6379:6379
+    volumes:
+      - ***********:/usr/local/etc/redis/redis.conf
+    networks:
+      - common-bridge
+        
+  rabbitmq-mgmt:
+    image: rabbitmq:3.9.13-management
+    deploy:
+      replicas: 1
+    restart: always
+    container_name: rabbitmq-1
+    ports:
+      - 15672:15672
+      - 5672:5672
+    networks:
+      - common-bridge    
+      
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.10.2
+    deploy:
+      replicas: 1
+    restart: always
+    container_name: elasticsearch-1
+    ports:
+      - 9200:9200
+      - 9300:9300
+    environment:
+      - discovery.type=single-node
+      - network.host=0.0.0.0
+    networks:
+      - common-bridge
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.10.2
+    deploy:
+      replicas: 1
+    restart: always
+    container_name: kibana-1
+    ports:
+      - 5601:5601
+    networks:
+      - common-bridge      
+
+  db:
+    image: postgres:13
+    deploy:
+      replicas: 1
+    restart: always
+    container_name: postgres
+    ports:
+      - 5432:5432
+    environment: 
+      - POSTGRES_PASSWORD=***** 
+    volumes:
+      - **********:/var/lib/postgresql/data
+    networks:
+      - common-bridge
+      
+#-------------------------------------------------------------//  NETWORK CONFİG  //-------------------------------------------------------------------------------------#
+
+networks:
+  common-bridge:
+    driver: bridge
+
+#-----------------------------------------------------------//  VOLUME MAPPİNG  //--------------------------------------------------------------------------------------#   
+
+volumes:
+  data:
+  db-erp:
+  conf: 
+  config:
